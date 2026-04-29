@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: fanvault
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: FanVault MERN Microservices Project
+
+  sourceRepos:
+    - "https://github.com/FanVault-Merch/helm-charts.git"
+
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: dev
+    - server: https://kubernetes.default.svc
+      namespace: prod
+    - server: https://kubernetes.default.svc
+      namespace: gate
+    - server: https://kubernetes.default.svc
+      namespace: argocd
+
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+    - group: gateway.networking.k8s.io
+      kind: GatewayClass
+
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
+
+  syncWindows: []
+
+  roles:
+    - name: ci-deployer
+      description: CI/CD pipeline deploy role
+      policies:
+        - p, proj:fanvault:ci-deployer, applications, sync, fanvault/*, allow
+        - p, proj:fanvault:ci-deployer, applications, get, fanvault/*, allow

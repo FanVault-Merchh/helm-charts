@@ -1,0 +1,95 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  fanvault-micro-apps – Values for PROD environment
+#  Branch:    main  |  Namespace: prod
+#  NOTE: image.tag is updated automatically by the CI helm-updater job
+# ══════════════════════════════════════════════════════════════════════════════
+global:
+  namespace: prod
+  imageRegistry: docker.io
+  imagePullPolicy: IfNotPresent
+  partOf: fanvault
+
+# ── Per-service overrides for prod ───────────────────────────────────────────
+auth-service:
+  namespace: prod
+  replicaCount: 1
+  role: prod-backend
+  image:
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+    limits:
+      cpu: "250m"
+      memory: "300Mi"
+
+user-service:
+  namespace: prod
+  replicaCount: 1
+  role: prod-backend
+  image:
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+    limits:
+      cpu: "250m"
+      memory: "300Mi"
+
+product-service:
+  namespace: prod
+  replicaCount: 1
+  role: prod-backend
+  image:
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+    limits:
+      cpu: "250m"
+      memory: "300Mi"
+
+order-service:
+  namespace: prod
+  replicaCount: 1
+  role: prod-backend
+  image:
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+    limits:
+      cpu: "250m"
+      memory: "300Mi"
+
+email-service:
+  namespace: prod
+  replicaCount: 1
+  role: prod-backend
+  image:
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: "25m"
+      memory: "64Mi"
+    limits:
+      cpu: "150m"
+      memory: "150Mi"
+
+frontend:
+  namespace: prod
+  replicaCount: 1
+  role: prod-frontend
+  image:
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: "25m"
+      memory: "64Mi"
+    limits:
+      cpu: "100m"
+      memory: "100Mi"

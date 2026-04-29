@@ -1,0 +1,85 @@
+# PROD environment child Applications
+# ArgoCD syncs all these when fanvault-prod-root is applied
+
+# ── fanvault-infra PROD ────────────────────────────────────────────────────────
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fanvault-infra-prod
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: fanvault
+    environment: prod
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: fanvault
+  source:
+    repoURL: https://github.com/FanVault-Merch/helm-charts.git
+    targetRevision: main
+    path: fanvault-infra
+    helm:
+      releaseName: fanvault-infra
+      valueFiles:
+        - values.yaml
+        - values-prod.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 5m
+
+---
+# ── fanvault-micro-apps PROD ───────────────────────────────────────────────────
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fanvault-apps-prod
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: fanvault
+    environment: prod
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: fanvault
+  source:
+    repoURL: https://github.com/FanVault-Merch/helm-charts.git
+    targetRevision: main
+    path: fanvault-micro-apps
+    helm:
+      releaseName: fanvault-apps
+      valueFiles:
+        - values.yaml
+        - values-prod.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 5m

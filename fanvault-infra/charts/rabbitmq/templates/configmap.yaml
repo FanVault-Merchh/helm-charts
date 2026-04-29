@@ -1,0 +1,17 @@
+{{- $namespace := .Values.namespace | default .Release.Namespace -}}
+{{- $name := .Values.fullnameOverride | default .Chart.Name -}}
+{{- with .Values.extraConfiguration }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}-config
+  namespace: {{ $namespace }}
+  labels:
+    app.kubernetes.io/name: {{ $name }}
+    app.kubernetes.io/component: rabbitmq
+    app.kubernetes.io/part-of: {{ $.Values.global.partOf | default "fanvault" }}
+    app.kubernetes.io/managed-by: Helm
+data:
+  99-fanvault.conf: |
+{{ . | nindent 4 }}
+{{- end }}

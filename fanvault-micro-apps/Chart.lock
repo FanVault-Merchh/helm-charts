@@ -1,0 +1,21 @@
+dependencies:
+- name: auth-service
+  repository: file://charts/auth-service
+  version: 1.0.0
+- name: user-service
+  repository: file://charts/user-service
+  version: 1.0.0
+- name: product-service
+  repository: file://charts/product-service
+  version: 1.0.0
+- name: order-service
+  repository: file://charts/order-service
+  version: 1.0.0
+- name: email-service
+  repository: file://charts/email-service
+  version: 1.0.0
+- name: frontend
+  repository: file://charts/frontend
+  version: 1.0.0
+digest: sha256:3fc33218c88e29b9f058e9e489c3ae2c66a6f9a5737131491a102d140bfe2518
+generated: "2026-04-26T04:31:32.613439754Z"

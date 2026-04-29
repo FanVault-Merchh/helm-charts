@@ -1,0 +1,20 @@
+{{- $namespace := .Values.namespace | default .Release.Namespace -}}
+{{- $name := .Values.fullnameOverride | default .Chart.Name -}}
+{{- if .Values.pdb.create }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ $name }}
+  namespace: {{ $namespace }}
+  labels:
+    app.kubernetes.io/name: {{ $name }}
+    app.kubernetes.io/component: rabbitmq
+    app.kubernetes.io/part-of: {{ $.Values.global.partOf | default "fanvault" }}
+    app.kubernetes.io/managed-by: Helm
+spec:
+  minAvailable: {{ .Values.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ $name }}
+      app.kubernetes.io/component: rabbitmq
+{{- end }}

@@ -1,0 +1,77 @@
+{{- $namespace := .Values.namespace | default .Release.Namespace -}}
+{{- $image := printf "%s:%s" .Values.image.repository .Values.image.tag -}}
+{{- $port := .Values.port | default 27017 -}}
+{{- range .Values.instances }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .name }}
+  namespace: {{ $namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .name }}
+    app.kubernetes.io/component: mongodb
+    app.kubernetes.io/part-of: {{ $.Values.global.partOf | default "fanvault" }}
+    app.kubernetes.io/managed-by: Helm
+spec:
+  serviceName: {{ .name }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .name }}
+      app.kubernetes.io/component: mongodb
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .name }}
+        app.kubernetes.io/component: mongodb
+        {{- with $.Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+        - name: mongodb
+          image: {{ $image | quote }}
+          imagePullPolicy: {{ $.Values.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - name: mongodb
+              containerPort: {{ $port }}
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: {{ .name }}-secret
+          env:
+            - name: MONGO_INITDB_DATABASE
+              value: {{ .database | quote }}
+          volumeMounts:
+            - name: data
+              mountPath: /data/db
+          {{- with $.Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          readinessProbe:
+            tcpSocket:
+              port: mongodb
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: mongodb
+            initialDelaySeconds: 30
+            periodSeconds: 20
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+      spec:
+        accessModes:
+          {{- range $.Values.persistence.accessModes }}
+          - {{ . | quote }}
+          {{- end }}
+        storageClassName: {{ $.Values.persistence.storageClass | quote }}
+        resources:
+          requests:
+            storage: {{ $.Values.persistence.size | quote }}
+{{- end }}

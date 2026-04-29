@@ -1,0 +1,32 @@
+namespace: dev
+
+image:
+  repository: mongo
+  tag: "7.0"
+  pullPolicy: IfNotPresent
+
+auth:
+  rootUser: root
+  rootPassword: root123
+
+port: 27017
+
+podLabels:
+  role: dev-db
+  app.kubernetes.io/part-of: fanvault
+
+persistence:
+  storageClass: nfs-storage
+  accessModes:
+    - ReadWriteOnce
+  size: 8Gi
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+
+instances: []

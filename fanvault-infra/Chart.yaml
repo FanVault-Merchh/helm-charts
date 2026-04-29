@@ -1,0 +1,31 @@
+apiVersion: v2
+name: fanvault-infra
+description: |
+  Umbrella Helm chart for FanVault infrastructure.
+  Installs: namespace, network-policies, configmaps, secrets,
+            RBAC, kgateway, MongoDB, RabbitMQ.
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+dependencies:
+  # ── Local sub-charts (picked up from charts/ directory) ────────────────
+  - name: backend-common
+    version: "1.0.0"
+    repository: file://charts/backend-common
+
+  - name: gateway
+    version: "1.0.0"
+    repository: file://charts/gateway
+
+  - name: loadgenerator
+    version: "1.0.0"
+    repository: file://charts/loadgenerator
+
+  - name: mongodb
+    version: "1.0.0"
+    repository: file://charts/mongodb
+
+  - name: rabbitmq
+    version: "1.0.1"
+    repository: file://charts/rabbitmq

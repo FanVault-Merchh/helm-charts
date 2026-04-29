@@ -1,0 +1,61 @@
+namespace: dev
+
+fullnameOverride: rabbitmq
+
+image:
+  repository: rabbitmq
+  tag: "3.13-management"
+  pullPolicy: IfNotPresent
+
+auth:
+  username: root
+  password: root123
+  erlangCookie: FanVaultRabbitMQSecretCookie2025
+  vhost: /
+
+replicaCount: 1
+
+podLabels:
+  role: dev-db
+  app.kubernetes.io/part-of: fanvault
+
+service:
+  type: ClusterIP
+  port: 5672
+  managerPort: 15672
+
+persistence:
+  enabled: true
+  storageClass: nfs-storage
+  accessMode: ReadWriteOnce
+  size: 4Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+pdb:
+  create: true
+  minAvailable: 1
+
+readinessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 10
+  failureThreshold: 6
+
+livenessProbe:
+  initialDelaySeconds: 120
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 6
+
+extraConfiguration: |
+  deprecated_features.permit.management_metrics_collection = true
+  default_permissions.configure = .*
+  default_permissions.read = .*
+  default_permissions.write = .*

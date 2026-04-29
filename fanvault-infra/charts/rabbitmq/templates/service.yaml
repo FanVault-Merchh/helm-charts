@@ -1,0 +1,26 @@
+{{- $namespace := .Values.namespace | default .Release.Namespace -}}
+{{- $name := .Values.fullnameOverride | default .Chart.Name -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  namespace: {{ $namespace }}
+  labels:
+    app.kubernetes.io/name: {{ $name }}
+    app.kubernetes.io/component: rabbitmq
+    app.kubernetes.io/part-of: {{ $.Values.global.partOf | default "fanvault" }}
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
+  ports:
+    - name: amqp
+      port: {{ .Values.service.port | default 5672 }}
+      targetPort: amqp
+      protocol: TCP
+    - name: management
+      port: {{ .Values.service.managerPort | default 15672 }}
+      targetPort: management
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: {{ $name }}
+    app.kubernetes.io/component: rabbitmq

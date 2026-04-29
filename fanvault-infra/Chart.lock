@@ -1,0 +1,18 @@
+dependencies:
+- name: backend-common
+  repository: file://charts/backend-common
+  version: 1.0.0
+- name: gateway
+  repository: file://charts/gateway
+  version: 1.0.0
+- name: loadgenerator
+  repository: file://charts/loadgenerator
+  version: 1.0.0
+- name: mongodb
+  repository: file://charts/mongodb
+  version: 1.0.0
+- name: rabbitmq
+  repository: file://charts/rabbitmq
+  version: 1.0.1
+digest: sha256:91cfdd654cecfbc4fdb6e9f0e8646f19d18fd3a49dbf852f76cfe0f6b3d1d0ed
+generated: "2026-04-26T04:22:13.990235314Z"

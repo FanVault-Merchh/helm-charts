@@ -1,0 +1,35 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  App-of-Apps ROOT for DEV environment
+#  This single Application tells ArgoCD to watch argocd/dev/ in the helm-charts
+#  repo. Every Application file inside that folder is applied automatically.
+# ══════════════════════════════════════════════════════════════════════════════
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fanvault-dev-root
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: fanvault
+    environment: dev
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"   # Apply before child apps
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: fanvault
+
+  source:
+    repoURL: https://github.com/FanVault-Merch/helm-charts.git
+    targetRevision: develop          # Watches develop branch for dev
+    path: argocd/dev                 # All Application manifests for dev live here
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,85 @@
+# DEV environment child Applications
+# ArgoCD syncs all these when fanvault-dev-root is applied
+
+# ── fanvault-infra (namespaces, configmaps, secrets, netpols, gateway, mongo, rabbit) ──
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fanvault-infra-dev
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: fanvault
+    environment: dev
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"   # Infra first
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: fanvault
+  source:
+    repoURL: https://github.com/FanVault-Merch/helm-charts.git
+    targetRevision: develop
+    path: fanvault-infra
+    helm:
+      releaseName: fanvault-infra
+      valueFiles:
+        - values.yaml
+        - values-dev.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+
+---
+# ── fanvault-micro-apps (all 6 microservice Deployments + Services) ────────────
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fanvault-apps-dev
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: fanvault
+    environment: dev
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"   # Apps after infra is healthy
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: fanvault
+  source:
+    repoURL: https://github.com/FanVault-Merch/helm-charts.git
+    targetRevision: develop
+    path: fanvault-micro-apps
+    helm:
+      releaseName: fanvault-apps
+      valueFiles:
+        - values.yaml
+        - values-dev.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false    # Namespace created by infra
+      - ServerSideApply=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m

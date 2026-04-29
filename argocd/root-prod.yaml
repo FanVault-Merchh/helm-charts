@@ -1,0 +1,33 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  App-of-Apps ROOT for PROD environment
+# ══════════════════════════════════════════════════════════════════════════════
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fanvault-prod-root
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: fanvault
+    environment: prod
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: fanvault
+
+  source:
+    repoURL: https://github.com/FanVault-Merch/helm-charts.git
+    targetRevision: main             # Watches main branch for prod
+    path: argocd/prod                # All Application manifests for prod live here
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

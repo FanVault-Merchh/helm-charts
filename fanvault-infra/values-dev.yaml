@@ -1,0 +1,199 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  fanvault-infra – Values for DEV environment
+#  Branch:    develop  (ArgoCD watches this branch for dev)
+#  Namespace: dev
+# ══════════════════════════════════════════════════════════════════════════════
+global:
+  namespace: dev
+  imageRegistry: docker.io
+  imagePullPolicy: Always      # Always pull on dev for faster iteration
+  partOf: fanvault
+  gateway:
+    gatewayClassName: kgateway
+    controllerName: kgateway.dev/kgateway
+    deployGatewayClass: true
+
+backend-common:
+  namespace: dev
+  partOf: fanvault
+  services:
+    auth-service:
+      role: dev-backend
+      port: 3001
+      config:
+        PORT: "3001"
+        NODE_ENV: "development"
+        SERVICE_NAME: "auth-service"
+        JWT_EXPIRES_IN: "15m"
+        JWT_REFRESH_EXPIRES_IN: "7d"
+      secret:
+        MONGO_URI: "mongodb://root:root123@auth-mongodb.dev.svc.cluster.local:27017/auth-db?authSource=admin"
+        JWT_SECRET: "dev-jwt-secret-change-in-prod"
+        JWT_REFRESH_SECRET: "dev-jwt-refresh-secret-change-in-prod"
+
+    user-service:
+      role: dev-backend
+      port: 3002
+      config:
+        PORT: "3002"
+        NODE_ENV: "development"
+        SERVICE_NAME: "user-service"
+      secret:
+        MONGO_URI: "mongodb://root:root123@user-mongodb.dev.svc.cluster.local:27017/user-db?authSource=admin"
+        JWT_SECRET: "dev-jwt-secret-change-in-prod"
+        INTERNAL_SECRET: "dev-internal-secret"
+
+    product-service:
+      role: dev-backend
+      port: 3003
+      config:
+        PORT: "3003"
+        NODE_ENV: "development"
+        SERVICE_NAME: "product-service"
+      secret:
+        MONGO_URI: "mongodb://root:root123@product-mongodb.dev.svc.cluster.local:27017/product-db?authSource=admin"
+        JWT_SECRET: "dev-jwt-secret-change-in-prod"
+
+    order-service:
+      role: dev-backend
+      port: 3004
+      config:
+        PORT: "3004"
+        NODE_ENV: "development"
+        SERVICE_NAME: "order-service"
+        EMAIL_SERVICE_URL: "http://email-service.dev.svc.cluster.local:3005"
+      secret:
+        MONGO_URI: "mongodb://root:root123@order-mongodb.dev.svc.cluster.local:27017/order-db?authSource=admin"
+        RABBITMQ_URL: "amqp://root:root123@rabbitmq.dev.svc.cluster.local:5672"
+        JWT_SECRET: "dev-jwt-secret-change-in-prod"
+        INTERNAL_SECRET: "dev-internal-secret"
+
+    email-service:
+      role: dev-backend
+      port: 3005
+      config:
+        PORT: "3005"
+        NODE_ENV: "development"
+        SERVICE_NAME: "email-service"
+        SMTP_HOST: "smtp.gmail.com"
+        SMTP_PORT: "587"
+        SMTP_SECURE: "false"
+        SMTP_FROM: "FanVault Dev <jayabaaskar@gmail.com>"
+      secret:
+        RABBITMQ_URL: "amqp://root:root123@rabbitmq.dev.svc.cluster.local:5672"
+        INTERNAL_SECRET: "dev-internal-secret"
+        SMTP_USER: "jayabaaskar@gmail.com"
+        SMTP_PASS: "moefitmxbruudot"
+
+    frontend:
+      role: dev-frontend
+      port: 80
+      config:
+        NODE_ENV: "development"
+        API_BASE_URL: "http://fanvault-gateway.dev.svc.cluster.local"
+      secret: {}
+
+gateway:
+  namespace: dev
+  name: fanvault-gateway
+  role: dev-gateway
+  gatewayClassName: kgateway
+  listenerPort: 80
+  hpa:
+    enabled: false          # Disabled in dev to save resources
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 70
+  routes:
+    - name: auth-route
+      pathPrefix: /api/auth
+      serviceName: auth-service
+      servicePort: 3001
+    - name: user-route
+      pathPrefix: /api/users
+      serviceName: user-service
+      servicePort: 3002
+    - name: product-route
+      pathPrefix: /api/products
+      serviceName: product-service
+      servicePort: 3003
+    - name: order-route
+      pathPrefix: /api/orders
+      serviceName: order-service
+      servicePort: 3004
+    - name: email-route
+      pathPrefix: /api/email
+      serviceName: email-service
+      servicePort: 3005
+    - name: frontend-route
+      pathPrefix: /
+      serviceName: frontend
+      servicePort: 80
+
+mongodb:
+  namespace: dev
+  image:
+    repository: mongo
+    tag: "7.0"
+    pullPolicy: IfNotPresent
+  auth:
+    rootUser: root
+    rootPassword: "root123"
+  port: 27017
+  podLabels:
+    role: dev-db
+    app.kubernetes.io/part-of: fanvault
+  persistence:
+    storageClass: "nfs-storage"
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi            # Smaller in dev
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+  instances:
+    - name: auth-mongodb
+      database: auth-db
+    - name: user-mongodb
+      database: user-db
+    - name: product-mongodb
+      database: product-db
+    - name: order-mongodb
+      database: order-db
+
+rabbitmq:
+  namespace: dev
+  fullnameOverride: rabbitmq
+  auth:
+    username: root
+    password: "root123"
+    erlangCookie: "FanVaultRabbitMQDevCookie2025"
+    vhost: /
+  image:
+    repository: rabbitmq
+    tag: "3.13-management"
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  podLabels:
+    role: dev-db
+    app.kubernetes.io/part-of: fanvault
+  service:
+    type: ClusterIP
+    port: 5672
+    managerPort: 15672
+  persistence:
+    enabled: true
+    storageClass: "nfs-storage"
+    accessMode: ReadWriteOnce
+    size: 2Gi
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"

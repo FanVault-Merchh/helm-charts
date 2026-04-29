@@ -1,0 +1,46 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  fanvault-micro-apps – Values for DEV environment
+#  Branch:    develop  |  Namespace: dev
+# ══════════════════════════════════════════════════════════════════════════════
+global:
+  namespace: dev
+  imageRegistry: docker.io
+  imagePullPolicy: Always
+  partOf: fanvault
+
+# ── Per-service overrides for dev ────────────────────────────────────────────
+auth-service:
+  namespace: dev
+  replicaCount: 1
+  image:
+    pullPolicy: Always
+
+user-service:
+  namespace: dev
+  replicaCount: 1
+  image:
+    pullPolicy: Always
+
+product-service:
+  namespace: dev
+  replicaCount: 1
+  image:
+    pullPolicy: Always
+
+order-service:
+  namespace: dev
+  replicaCount: 1
+  image:
+    pullPolicy: Always
+
+email-service:
+  namespace: dev
+  replicaCount: 1
+  image:
+    pullPolicy: Always
+
+frontend:
+  namespace: dev
+  replicaCount: 1
+  image:
+    pullPolicy: Always

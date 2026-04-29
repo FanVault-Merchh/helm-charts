@@ -1,0 +1,6 @@
+apiVersion: v2
+name: rabbitmq
+description: Local RabbitMQ chart for shared FanVault messaging.
+type: application
+version: 1.0.1
+appVersion: "3.13"

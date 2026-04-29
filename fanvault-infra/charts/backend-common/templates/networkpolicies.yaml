@@ -1,0 +1,113 @@
+# # ══════════════════════════════════════════════════════════════════════════
+# #  Network Policies for FanVault
+# #  Strategy: Default allow everything, except DB pods (default deny on DB)
+# #  Only DB pods are restricted - only backend can connect on ports 27017, 5672
+# #  All other pods can communicate freely (frontend, backend, gateway)
+# #
+# #  Traffic Matrix:
+# #    frontend ↔ gateway ↔ backend  (all allowed by default)
+# #    backend → db                  (allowed on :27017, :5672 only)
+# #    db ← backend                  (allowed on :27017, :5672 only)
+# #    ALL pods → kube-dns           (:53)
+# # ══════════════════════════════════════════════════════════════════════════
+
+# # ── 1. DEFAULT DENY ONLY FOR DB PODS ───────────────────────────────────
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-db
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: {{ .Values.partOf | default "fanvault" }}
+spec:
+  podSelector:
+    matchLabels:
+      role: dev-db
+  policyTypes:
+    - Ingress
+    - Egress
+
+── 2. ALLOW DNS EGRESS FOR ALL PODS (EXCEPT GATEWAY) ───────────────────
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns-egress
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: {{ .Values.partOf | default "fanvault" }}
+spec:
+  podSelector:
+    matchExpressions:
+      - key: role
+        operator: In
+        values:
+          - dev-db
+          - dev-backend
+          - dev-frontend
+          # - dev-gateway
+  policyTypes:
+    - Egress
+  egress:
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+# # ── 3. ALLOW BACKEND → DB (MongoDB + RabbitMQ) ─────────────────────────
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-backend-to-db
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: {{ .Values.partOf | default "fanvault" }}
+spec:
+  podSelector:
+    matchLabels:
+      role: dev-backend
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              role: dev-db
+      ports:
+        - protocol: TCP
+          port: 27017
+        - protocol: TCP
+          port: 5672
+
+# ── 4. ALLOW DB ← BACKEND (DB ingress from backend) ─────────────────────
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-db-ingress-from-backend
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: {{ .Values.partOf | default "fanvault" }}
+spec:
+  podSelector:
+    matchLabels:
+      role: dev-db
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              role: dev-backend
+      ports:
+        - protocol: TCP
+          port: 27017
+        - protocol: TCP
+          port: 5672
