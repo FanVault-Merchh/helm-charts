@@ -35,7 +35,7 @@ resources:
 # Nginx needs root to bind port 80
 securityContext:
   runAsNonRoot: false
-  # runAsUser: 0 
+  runAsUser: 0
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: false
   capabilities:
