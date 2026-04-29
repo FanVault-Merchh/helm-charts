@@ -24,12 +24,12 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      role: dev-db
+      role: {{ .Values.networkPolicy.dbRole }}
   policyTypes:
     - Ingress
     - Egress
 
-── 2. ALLOW DNS EGRESS FOR ALL PODS (EXCEPT GATEWAY) ───────────────────
+# ── 2. ALLOW DNS EGRESS FOR ALL PODS (EXCEPT GATEWAY) ───────────────────
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -45,10 +45,10 @@ spec:
       - key: role
         operator: In
         values:
-          - dev-db
-          - dev-backend
-          - dev-frontend
-          # - dev-gateway
+          - {{ .Values.networkPolicy.dbRole }}
+          - {{ .Values.networkPolicy.backendRole }}
+          - {{ .Values.networkPolicy.frontendRole }}
+          # - gateway
   policyTypes:
     - Egress
   egress:
@@ -71,14 +71,14 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      role: dev-backend
+      role: {{ .Values.networkPolicy.backendRole }}
   policyTypes:
     - Egress
   egress:
     - to:
         - podSelector:
             matchLabels:
-              role: dev-db
+              role: {{ .Values.networkPolicy.dbRole }}
       ports:
         - protocol: TCP
           port: 27017
@@ -98,14 +98,14 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      role: dev-db
+      role: {{ .Values.networkPolicy.dbRole }}
   policyTypes:
     - Ingress
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              role: dev-backend
+              role: {{ .Values.networkPolicy.backendRole }}
       ports:
         - protocol: TCP
           port: 27017

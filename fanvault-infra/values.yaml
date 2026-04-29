@@ -29,6 +29,10 @@ global:
 backend-common:
   namespace: dev
   partOf: fanvault
+  networkPolicy:
+    backendRole: dev-backend
+    dbRole: dev-db
+    frontendRole: dev-frontend
 
   # ── Per-service configuration (ConfigMaps) ────────────────────────────
   services:

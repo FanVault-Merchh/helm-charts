@@ -16,6 +16,10 @@ global:
 backend-common:
   namespace: prod
   partOf: fanvault
+  networkPolicy:
+    backendRole: prod-backend
+    dbRole: prod-db
+    frontendRole: prod-frontend
   services:
     auth-service:
       role: prod-backend
