@@ -9,7 +9,7 @@ spec:
   description: FanVault MERN Microservices Project
 
   sourceRepos:
-    - "https://github.com/FanVault-Merch/helm-charts.git"
+    - "https://github.com/FanVault-Merchh/helm-charts.git"
 
   destinations:
     - server: https://kubernetes.default.svc

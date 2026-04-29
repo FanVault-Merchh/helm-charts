@@ -19,7 +19,7 @@ spec:
   project: fanvault
 
   source:
-    repoURL: https://github.com/FanVault-Merch/helm-charts.git
+    repoURL: https://github.com/FanVault-Merchh/helm-charts.git
     targetRevision: develop          # Watches develop branch for dev
     path: argocd/dev                 # All Application manifests for dev live here
 

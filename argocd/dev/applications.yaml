@@ -17,7 +17,7 @@ metadata:
 spec:
   project: fanvault
   source:
-    repoURL: https://github.com/FanVault-Merch/helm-charts.git
+    repoURL: https://github.com/FanVault-Merchh/helm-charts.git
     targetRevision: develop
     path: fanvault-infra
     helm:
@@ -59,7 +59,7 @@ metadata:
 spec:
   project: fanvault
   source:
-    repoURL: https://github.com/FanVault-Merch/helm-charts.git
+    repoURL: https://github.com/FanVault-Merchh/helm-charts.git
     targetRevision: develop
     path: fanvault-micro-apps
     helm:
