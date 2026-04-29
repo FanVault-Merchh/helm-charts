@@ -15,12 +15,12 @@ service:
 probes:
   liveness:
     path: /health
-    initialDelaySeconds: 15
+    initialDelaySeconds: 60
     periodSeconds: 20
     failureThreshold: 3
   readiness:
     path: /health
-    initialDelaySeconds: 5
+    initialDelaySeconds: 15
     periodSeconds: 10
     failureThreshold: 3
 resources:
