@@ -6,7 +6,7 @@ role: dev-backend
 replicaCount: 1
 image:
   repository: savitxr/fanvault-auth
-  tag: v0.0.1
+  tag: v0.0.2
   pullPolicy: IfNotPresent
 containerPort: 3001
 service:
