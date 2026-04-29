@@ -18,11 +18,11 @@ auth-service:
     pullPolicy: IfNotPresent
   resources:
     requests:
-      cpu: "50m"
-      memory: "128Mi"
+      cpu: "20m"
+      memory: "64Mi"
     limits:
-      cpu: "250m"
-      memory: "300Mi"
+      cpu: "150m"
+      memory: "200Mi"
 
 user-service:
   namespace: prod
@@ -32,11 +32,11 @@ user-service:
     pullPolicy: IfNotPresent
   resources:
     requests:
-      cpu: "50m"
-      memory: "128Mi"
+      cpu: "20m"
+      memory: "64Mi"
     limits:
-      cpu: "250m"
-      memory: "300Mi"
+      cpu: "150m"
+      memory: "200Mi"
 
 product-service:
   namespace: prod
@@ -46,11 +46,11 @@ product-service:
     pullPolicy: IfNotPresent
   resources:
     requests:
-      cpu: "50m"
-      memory: "128Mi"
+      cpu: "20m"
+      memory: "64Mi"
     limits:
-      cpu: "250m"
-      memory: "300Mi"
+      cpu: "150m"
+      memory: "200Mi"
 
 order-service:
   namespace: prod
@@ -60,11 +60,11 @@ order-service:
     pullPolicy: IfNotPresent
   resources:
     requests:
-      cpu: "50m"
-      memory: "128Mi"
+      cpu: "20m"
+      memory: "64Mi"
     limits:
-      cpu: "250m"
-      memory: "300Mi"
+      cpu: "150m"
+      memory: "200Mi"
 
 email-service:
   namespace: prod
@@ -74,11 +74,11 @@ email-service:
     pullPolicy: IfNotPresent
   resources:
     requests:
-      cpu: "25m"
-      memory: "64Mi"
+      cpu: "10m"
+      memory: "32Mi"
     limits:
-      cpu: "150m"
-      memory: "150Mi"
+      cpu: "75m"
+      memory: "128Mi"
 
 frontend:
   namespace: prod
@@ -89,8 +89,8 @@ frontend:
     pullPolicy: IfNotPresent
   resources:
     requests:
-      cpu: "25m"
-      memory: "64Mi"
+      cpu: "10m"
+      memory: "32Mi"
     limits:
-      cpu: "100m"
-      memory: "100Mi"
+      cpu: "75m"
+      memory: "64Mi"
