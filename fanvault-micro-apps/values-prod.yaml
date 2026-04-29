@@ -85,6 +85,7 @@ frontend:
   replicaCount: 1
   role: prod-frontend
   image:
+    tag: v0.0.1
     pullPolicy: IfNotPresent
   resources:
     requests:
