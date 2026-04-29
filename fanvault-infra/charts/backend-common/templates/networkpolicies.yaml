@@ -40,15 +40,7 @@ metadata:
     app.kubernetes.io/component: network-policy
     app.kubernetes.io/part-of: {{ .Values.partOf | default "fanvault" }}
 spec:
-  podSelector:
-    matchExpressions:
-      - key: role
-        operator: In
-        values:
-          - {{ .Values.networkPolicy.dbRole }}
-          - {{ .Values.networkPolicy.backendRole }}
-          - {{ .Values.networkPolicy.frontendRole }}
-          # - gateway
+  podSelector: {}
   policyTypes:
     - Egress
   egress:
