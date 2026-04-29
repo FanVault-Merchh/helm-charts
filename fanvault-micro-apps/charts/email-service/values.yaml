@@ -6,7 +6,7 @@ role: dev-backend
 replicaCount: 1
 image:
   repository: savitxr/fanvault-email
-  tag: v0.0.3
+  tag: v0.0.1
   pullPolicy: IfNotPresent
 containerPort: 3005
 service:
